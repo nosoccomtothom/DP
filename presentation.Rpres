@@ -1,0 +1,48 @@
+ShinyApp - Registered vehicles in Barcelona (2007-2011)
+========================================================
+author: Esteve Serra
+date: 2014-10-24
+font-family: 'Helvetica'
+width:1900
+Overview
+========================================================
+
+Taking the available data from the platform **[OpenDataBCN](http://opendata.bcn.cat/opendata/ca)**, the Shiny application displays the evolution of registered cars by type per district and neighbourhood.
+The application itself
+
+- Fetches the data during the execution time from the OpenData BCN portal [available datasets](http://opendata.bcn.cat/opendata/en/catalog/TRANSPORT/tipologia-tipo/)
+- Displays the evolution of registered vehicles within 2007 and 2011 per type for Barcelona/Distrcit
+- Allows interactivity with the users providing a District selection and figures display format
+
+Inside the App
+========================================================
+
+The **global.R** performs code onces at the beginning (ie, data fecthing). The files are parsed for cleansing, binded together (there is a file per year) and labeled in English.
+**ui.R** has two selectors: district and display format
+**server.R** based on the inputs performs the calculations of the averages.
+![alt text](shiny_vehicles_bcn.png)
+
+Inside the App- server.R (table)
+========================================================
+```{r eval=FALSE, tidy=TRUE}
+    output$barris_list <- renderTable({
+      veh_means<-ddply(vehicles, .(dte,barris), numcolwise(mean))
+      col_names_veh<-c("District","Neighbourghood","# Total","# Cars","# Bikes","# Mopeds","# Vans","# Trucks", "# Others")
+      if(input$display=="percentages"){
+         label<-"Pct"
+         veh_means<-cbind(veh_means[c(1,2)], prop.table(as.matrix(veh_means[-c(1,2,3)]), margin = 1)*100)
+         col_names_veh<-col_names_veh[-3]
+      }else {label<-"Avg"}     
+      col_names_veh<-gsub("#",label,col_names_veh)
+      colnames(veh_means)<-col_names_veh
+      ifelse(input$dte=="All",list<-veh_means, list<-veh_means[veh_means$District==input$dte,])
+      data.frame(list)
+    })
+```
+
+Inside the App - server.R (plots)
+========================================================
+```{r eval=FALSE, tidy=TRUE}
+      ifelse(input$dte=="All",q <- ggplot(veh_to_plot, aes(year,value)) + geom_bar( stat="identity",aes(color=type, fill=type)) +  xlab("Year") + ylab("Vehicles") + theme_bw() + ggtitle("All districts"),q <- ggplot(veh_dte_to_plot[veh_dte_to_plot$dte==input$dte,], aes(year,value)) + geom_bar(stat="identity", aes(color=type, fill=type)) +  xlab("Year") + ylab("Vehicles") + theme_bw() + ggtitle(paste("District ",input$dte)))
+      print(q)
+```

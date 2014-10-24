@@ -1,0 +1,15 @@
+---
+title: "Registered Vehicles in Barcelona by district (2007-2011)"
+output: html_document
+---
+
+###Overview
+This the Shiny application  **Registred vehicles in Barcelona by district (2007-2011)** is based on the data made available on **[OpenDataBCN](http://opendata.bcn.cat/opendata/ca)** and focuses on the available census of registered vehicles in the city of Barcelona for the span of the years 2007 till 2011. The data is fetched from the portal every time the application is launched so no data is stored.
+
+The [available datasets](http://opendata.bcn.cat/opendata/en/catalog/TRANSPORT/tipologia-tipo/) for each of the years within 2007 and 2011 include as dimensions the District and Neighbourhood and registered vehicles by totals and type (cars, bikes, mopeds, vans, trucks and others).
+
+The registered vehicles are displayed throughout the time span as stacked bars with colour coding based on the type of vehicles.
+
+###Interactivity
+There are two input methods in the applicatoin. The user can either pick one of the 10 districts within the city of Barcelona or get the overall values (All). The totals and subtotals are responsive, so calculated on the fly, based on the user input. These figures are shown as totals or percentages related to the totals following the radio button value selection. When percentages are selected, the column related to the totals is removed.
+
